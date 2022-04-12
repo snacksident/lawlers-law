@@ -4,13 +4,28 @@ with open('apidata.txt') as f:
     the_api_data = f.read()
 #convert cached and stringified api data back to json for parsing
 json_object = json.loads(the_api_data)
+
+
+# print(f'matchups for: {json_object["parameters"]["date"]}')
+# for matchups in json_object["response"]:
+#     print(f'{matchups["teams"]["home"]["name"]} vs {matchups["teams"]["visitors"]["name"]}')
+#     print(f'{matchups["scores"]["home"]["points"]} vs {matchups["scores"]["visitors"]["points"]}')
+
+
+
 home_team = json_object["response"][0]["teams"]["home"]["name"]
 home_score = json_object["response"][0]["scores"]["home"]["points"]
 away_team = json_object["response"][0]["teams"]["visitors"]["name"]
 away_score = json_object["response"][0]["scores"]["visitors"]["points"]
+lawler_score = 100
+lawler_event = False
+# print(f'the final score is: {home_team}:{home_score}, {away_team}:{away_score}')
+with open('sportradar.txt') as g:
+    sportradar_data = g.read()
+sportradar_json = json.loads(sportradar_data)
+print(sportradar_json["games"])
+for games in sportradar_json["games"]:
+    print(f'games start at {games["scheduled"]}, this games id is {games["id"]}')
+    print(f'matchup is: {games["home"]["name"]} vs {games["away"]["name"]}')
 
-print(f'the visiting team for sample data is: {away_team}')
-print(f'the home team for sample data is: {home_team}')
-print(f'the visitors score for sample data is: {away_score}')
-print(f'the home score for sample data is {home_score}')
-print(f'the final score is: {home_team}:{home_score}, {away_team}:{away_score}')
+#this file should run every time new data arrives

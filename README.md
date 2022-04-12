@@ -21,7 +21,7 @@ I would like to make a Twitter bot that pulls live scores from current NBA games
 - python
 - beautifulsoup python package for scraping
 - selenium python package for scraping dynamic content
-- heavy reliance on postman for testing twitter endpoints`
+- heavy reliance on postman for testing twitter endpoints
 
 # MVP
 - broadcast tweets from bot account @Lawlers_laws

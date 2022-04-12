@@ -9,6 +9,7 @@ client = tweepy.Client(consumer_key=os.getenv('CONSUMER_KEY'),
                        access_token=os.getenv('ACCESS_TOKEN'),
                        access_token_secret=os.getenv('ACCESS_TOKEN_SECRET'))
 # create tweet with token credentials
+text_to_tweet = ""
 response = client.create_tweet(text='hello again')
 # print response from twitter to console, verifying that the tweet was sent
 print(response)
