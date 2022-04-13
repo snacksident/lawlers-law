@@ -2,15 +2,24 @@ import requests
 from dotenv import load_dotenv
 import os
 import json
+import random
+from datetime import datetime
+import time
 
-load_dotenv()
+load_dotenv() # load env vars
+
+# python datetime defaults to YYYY-MM-DD, need to change shape to YYYY/MM/DD
+todays_date = str(datetime.today()).replace('-','/')[:10] #convert datetime to string, replace -'s with /'s, take first 10 chars (for format: YYYY/MM/DD instead of python date type)
+print(todays_date)
+
 def check_todays_games():
     '''
     checks sportradar api for any games happening today.  for now, adds them to text file for further viewing
     '''
+    global todays_date
     API_KEY = os.getenv('SPORTRADAR_API_KEY')
     #gonna need to change dates in URL with a var
-    url = f'http://api.sportradar.us/nba/trial/v7/en/games/2022/04/12/schedule.json?api_key={API_KEY}'
+    url = f'http://api.sportradar.us/nba/trial/v7/en/games/{todays_date}/schedule.json?api_key={API_KEY}'
     print(url)
     headers = {
         "X-Originating-IP": "104.182.70.32"
@@ -39,53 +48,44 @@ def check_score_by_game_id(game_id):
 
 current_game_tracker = {
     "home": {
-        "name": "home test",
-        "score": 60
+        "name": "home test", # assign team name here from API
+        "score": 60 # score will likely start at 0, changing the first time we call the API
     },
     "away": {
-        "name": "away test",
-        "score": 75
+        "name": "away test", # assign team name here from API
+        "score": 60 # start at 0, changing when API is called
     }
 }
-#  do this loop for home and away. stopping if either team reaches 100.
-# while (gameid_game["home"]["score"]) < 100:
-    #if (gameid_game["home"]["score"]) > 90:
-        #do a new call in 3 mins
-        #reassign both team scores
-        #gameid_game["home"]["score"] = api_result["home"]["score"]
-    #elif (either teams score) > 80:
-        #do a call in 7 mins
-        #reassign both team scores
-        #gameid_game["home"]["score"] = api_result["home"]["score"]
-    #else:
-        #call in 10 mins
-        #reassign both team scores
-        ##gameid_game["home"]["score"] = api_result["home"]["score"]
-# if (either team score) > 100:
-    #tweet out that we have a team over 100 (a 'winner' in lawlers eyes)
-    #save gameID
-    #follow up when game ends to determine if law was t/f
+def get_random_score():
+    return random.randrange(1,4)
+
 
 def check_scores():
-    while current_game_tracker["home"]["score"] < 100:
-        if current_game_tracker["home"]["score"] > 90:
-            pass
-            #do a new call in 3 mins
-            #reassign  team scores
-            print(f'current score is {current_game_tracker["home"]["score"]}')
-            current_game_tracker["home"]["score"] += 3
-        elif current_game_tracker["home"]["score"] > 80:
-            pass
+    while current_game_tracker["home"]["score"] < 100 and current_game_tracker["away"]["score"] < 100:
+        print(f'current score is {current_game_tracker["home"]["score"]} to {current_game_tracker["away"]["score"]}')
+        if current_game_tracker["home"]["score"] or current_game_tracker["away"]["score"] > 90:
+            #do a new api call in 3 mins - assign team scores rather than incrementing dummy code
+            current_game_tracker["home"]["score"] += get_random_score()
+            current_game_tracker["away"]["score"] += get_random_score()
+            time.sleep(5) # adjust as needed. 5 set as dummy value
+            #fire off a tweet that we're close to having a winner
+        elif current_game_tracker["home"]["score"] or current_game_tracker["away"]["score"] > 80:
             #do a call in 7 mins
-            print(f'current score is {current_game_tracker["home"]["score"]}')
-            current_game_tracker["home"]["score"] += 5
+            current_game_tracker["home"]["score"] += get_random_score()
+            current_game_tracker["away"]["score"] += get_random_score()
+            time.sleep(5)# adjust as needed. 5 set as dummy value
         else:
-            pass
             #call in 10 mins
             #reassign both team scores
-            print(f'current score is {current_game_tracker["home"]["score"]}')
-            current_game_tracker["home"]["score"] += 5
-    if current_game_tracker["home"]["score"] > 100:
-        print('we have a winner!!')
+            current_game_tracker["home"]["score"] += get_random_score()
+            current_game_tracker["away"]["score"] += get_random_score()
+            time.sleep(10)
+    if current_game_tracker["home"]["score"] >= 100:
+        #fire off a tweet announcing the winner
+        print(f'we have a winner: {current_game_tracker["home"]["name"]}')
+        print(f'final score: {current_game_tracker["home"]["score"]} to {current_game_tracker["away"]["score"]}')
+    elif current_game_tracker["away"]["score"] >= 100:
+        print(f'we have a winner: {current_game_tracker["away"]["name"]}')
+        print(f'final score: {current_game_tracker["home"]["score"]} to {current_game_tracker["away"]["score"]}')
 
-check_scores()
+# check_scores()
