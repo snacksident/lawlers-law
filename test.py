@@ -25,7 +25,7 @@ test_file = open("apidata.txt","w")
 json_dumps = json.dumps(response.json())
 test_file.write(json_dumps)
 
-#pull data early in the AM to see if/when any games are on that day - log to txt file 
+#pull data early in the AM to see if/when any games are on that day - log to txt file (schedule cron job to fire off at like... 4AM?)
 #if any games are happening that day, check start times. (save start times as vars to reference later - when to ping API)
 #start pinging API again for score updates starting ~30 min after halftime (not likely the score hits 100 before half)
 #if a team hits 100, save that team as "lawler winner" var (call tweet.py to fire off announcement of lawler situation)

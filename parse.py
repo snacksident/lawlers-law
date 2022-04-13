@@ -23,9 +23,14 @@ lawler_event = False
 with open('sportradar.txt') as g:
     sportradar_data = g.read()
 sportradar_json = json.loads(sportradar_data)
-print(sportradar_json["games"])
-for games in sportradar_json["games"]:
-    print(f'games start at {games["scheduled"]}, this games id is {games["id"]}')
-    print(f'matchup is: {games["home"]["name"]} vs {games["away"]["name"]}')
+if sportradar_json["status"] == "closed": #if the game is over
+    print('game over')
+    print(f'{sportradar_json["home"]["name"]} had {sportradar_json["home"]["points"]}' )
+    print(f'{sportradar_json["away"]["name"]} had {sportradar_json["away"]["points"]}' )
+# if sportradar_json["status"] == "scheduled"
+# print(sportradar_json["games"])
+# for games in sportradar_json["games"]:
+#     print(f'games start at {games["scheduled"]}, this games id is {games["id"]}')
+#     print(f'matchup is: {games["home"]["name"]} vs {games["away"]["name"]}')
 
 #this file should run every time new data arrives
