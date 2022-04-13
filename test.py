@@ -19,6 +19,7 @@ headers = {
 response = requests.request("GET", url, headers=headers, params=querystring)
 #print response json object
 print(response.json())
+
 #write data to text file to prevent need for further api calls
 test_file = open("apidata.txt","w")
 json_dumps = json.dumps(response.json())
