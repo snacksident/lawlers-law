@@ -37,22 +37,55 @@ def check_score_by_game_id(game_id):
     test_file.write(json_dumps)
     return current_game
 
-home_team = { # set these vars from the api for quick reference
-    "score": 0,
-    "name": None, 
+current_game_tracker = {
+    "home": {
+        "name": "home test",
+        "score": 60
+    },
+    "away": {
+        "name": "away test",
+        "score": 75
+    }
 }
-away_team = {
-    "score": 0,
-    "name": None,
-}
-# while (either teams score) < 100:
-    #if (either teams score) > 90:
-        #do a call in 3 mins
+#  do this loop for home and away. stopping if either team reaches 100.
+# while (gameid_game["home"]["score"]) < 100:
+    #if (gameid_game["home"]["score"]) > 90:
+        #do a new call in 3 mins
+        #reassign both team scores
+        #gameid_game["home"]["score"] = api_result["home"]["score"]
     #elif (either teams score) > 80:
         #do a call in 7 mins
+        #reassign both team scores
+        #gameid_game["home"]["score"] = api_result["home"]["score"]
     #else:
         #call in 10 mins
+        #reassign both team scores
+        ##gameid_game["home"]["score"] = api_result["home"]["score"]
 # if (either team score) > 100:
     #tweet out that we have a team over 100 (a 'winner' in lawlers eyes)
     #save gameID
     #follow up when game ends to determine if law was t/f
+
+def check_scores():
+    while current_game_tracker["home"]["score"] < 100:
+        if current_game_tracker["home"]["score"] > 90:
+            pass
+            #do a new call in 3 mins
+            #reassign  team scores
+            print(f'current score is {current_game_tracker["home"]["score"]}')
+            current_game_tracker["home"]["score"] += 3
+        elif current_game_tracker["home"]["score"] > 80:
+            pass
+            #do a call in 7 mins
+            print(f'current score is {current_game_tracker["home"]["score"]}')
+            current_game_tracker["home"]["score"] += 5
+        else:
+            pass
+            #call in 10 mins
+            #reassign both team scores
+            print(f'current score is {current_game_tracker["home"]["score"]}')
+            current_game_tracker["home"]["score"] += 5
+    if current_game_tracker["home"]["score"] > 100:
+        print('we have a winner!!')
+
+check_scores()
