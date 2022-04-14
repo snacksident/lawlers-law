@@ -1,10 +1,6 @@
-from sportradar import check_todays_games, check_score_by_game_id, current_game_tracker
 #while True:
 #(automated, early AM) get days games (via sportradar.py check_todays_games())
-check_todays_games() #writes todays games info into a text file as json data
 #store games in dict/list var for reference later (teams playing, game id, scores, game time (local))
-if current_game_tracker != []:
-    check_score_by_game_id(current_game_tracker[0]["id"])
 #API call at halftime just to check scores (45 min after game start?) (via sportradar.py, check_score_by_game_id() )
  # should update sportradar.txt with new current game data
     #if scores are below threshold, do not call API for another 15 mins
