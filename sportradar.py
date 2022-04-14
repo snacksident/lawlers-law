@@ -25,6 +25,7 @@ def check_todays_games():
     todays_games = open("todaysgames.txt","w")
     todays_json = json.dumps(todays_schedule.json())
     todays_games.write(todays_json)
+    assign_game_data()
 
 
 # hit game url endpoint (60 mins?) after game start to check scores.
