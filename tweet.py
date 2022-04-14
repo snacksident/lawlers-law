@@ -11,5 +11,10 @@ client = tweepy.Client(consumer_key=os.getenv('CONSUMER_KEY'),
 # create tweet with token credentials
 text_to_tweet = ""
 response = client.create_tweet(text='hello again')
+def send_tweet(tweet_text):
+    '''
+    creates a plaintext tweet from @lawlers_laws account.  content of tweet is passed in as "tweet_text" var
+    '''
+    tweet_response = client.create_tweet(text=tweet_text)
 # print response from twitter to console, verifying that the tweet was sent
 print(response)
