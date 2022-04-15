@@ -14,7 +14,7 @@ def scheduler():
         while not game_on:
             utc_clock = datetime.utcnow().strftime("%H:%M:%S")
             game_start = games["start"][11:19]
-            if utc_clock >= game_start: #check utc time (HH:MM:SS) vs game start time in utc (HH:MM:SS)
+            if utc_clock == game_start: #check utc time (HH:MM:SS) vs game start time in utc (HH:MM:SS)
                 print(f'now watching the {games["home"]["name"]} vs {games["visitor"]["name"]} game')
                 tweet_content = f'now watching the {games["home"]["name"]} vs {games["visitor"]["name"]} game'
                 send_tweet(tweet_content)
