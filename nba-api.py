@@ -76,16 +76,56 @@ def assign_game_data():
 def update_scores():
     '''
     updates scores via live API calls
+    calls get_score_by_game_id on current game, checks currently logged scores vs most recently received data from API
     '''
     for games in games_to_track:
         get_score_by_game_id(games["id"])
-        #if score from API > score in games
+        #if the score saved locally is less than the score received on the recent API call, reassign the score.
         if games["home"]["score"] < json_current["response"][0]["scores"]["home"]["points"]:
             games["home"]["score"] = json_current["response"][0]["scores"]["home"]["points"]
         if games["visitor"]["score"] < json_current["response"][0]["scores"]["visitors"]["points"]:
             games["visitor"]["score"] = json_current["response"][0]["scores"]["visitors"]["points"]
-        
 
+
+def check_winner():
+    '''
+    checks to see if a team has hit 100 points.  if conditions are met, winner is assigned to the first team to 100
+    '''
+    for games in games_to_track:
+        winner = None
+        if winner == None:
+            if games["home"]["score"] >= 100:
+                winner = games["home"]["name"]
+            if games["visitor"]["score"] >= 100:
+                winner = games["visitor"]["name"]
+        #maybe just fire off the tweet when a winner has been determined?
+        #log what part of the game we're currently in, set timer to ping game at 'end'?
+        return winner
+    
+        
+    print(f'and the winner is: {winner}')
+
+def check_live_scores():
+    winner = None
+    while winner == None:
+        winner = check_winner()
+        for games in games_to_track:
+            if games["home"]["score"] > 90 or games["visitor"]["score"] > 90:
+                #api call 3x per minute
+                time.sleep(20)
+                update_scores()
+                #update_scores() ?
+            elif games["home"]["score"] > 80 or games["visitor"]["score"] > 80:
+                #api call every minute
+                time.sleep(60)
+                update_scores()
+            elif games["home"]["score"] > 70 or games["visitor"]["score"] > 70:
+                #api call every 2 minutes
+                time.sleep(120)
+                update_scores()
+            
+                
+        
 
 def reset_data():
     '''
@@ -95,3 +135,5 @@ def reset_data():
     games_to_track = []
 assign_game_data()  #this is working
 update_scores() #this appears to be working - test during live games tonight
+# check_winner()
+check_live_scores()
