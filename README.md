@@ -1,10 +1,10 @@
 # Project 4 Pitch
 
-## Lawlers Law Twitter Bot Announcer
+# Lawlers Law Twitter Bot Announcer
 
-Lawlers Law is a theory coined by Los Angeles Clippers broadcaster Ralph Lawler, assuming that the first team to 100 points wins the game.
+What is Lawlers Law anyway?  Lawlers law is a term coined by Los Angeles Clippers broadcaster Ralph Lawler, positing that the first team to 100 points wins the game.
 
-I would like to make a Twitter bot that pulls live scores from current NBA games, watching for a "Lawlers Law" event, and announce them as they happen.
+Inside this repo lives a bot that will announce occurences of Lawlers Law!
 
 # Bot Location:
 - twitter.com/lawler_announcer
@@ -19,27 +19,20 @@ I would like to make a Twitter bot that pulls live scores from current NBA games
 
 # Technology used:
 - python
-- beautifulsoup python package for scraping
-- selenium python package for scraping dynamic content
-- heavy reliance on postman for testing twitter endpoints
+- twitter
 
-# MVP
+# Features:
 - broadcast tweets from bot account @Lawlers_laws
 - retrieve live NBA scores
-- announce when a live game is approaching a lawlers law scenario
+- announce when the bot is "watching" a game
+- announce when a team has reached a "lawlers law" scenario
 
-# Stretch goals
+# Future Features:
 - follow up on games where the lawlers law event happened, determining if the law was accurate
 - track/log occurrances of each laws winners/losers
 - companion webpage to view further details on occurrances
+- refactor code to be more object oriented
+- tweets incorporate common famous lawler phrases
 
-
-# Schedule
-- tues : fumble through twitter api with postman, hopefully gain ability to post from bot account via python app - possible start on scraping data - tutorials on beautifulsoup and selenium
-- wed : continue learning about data scraping
-- thurs : organize twitter bot, conditions for bot to make postings
-- fri : iron out bugs - begin work on companion page
-- sat: companion page
-
-# twitter dev account
-![twitter dev account created](./assets/Untitled.png)
+# App in action:
+![screenshot of twitter page](./assets/account.png)
