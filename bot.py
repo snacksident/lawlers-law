@@ -1,6 +1,9 @@
 #while True:
 #(automated, early AM) get days games (via nba-api.py check_todays_games())
-
+#get_todays_games() #to populate text file of todays games
+#assign_game_data() #to assign text file to list of python dictionaries
+#lock check_live_scores behind some sort of timer based on game start time
+#check_live_scores() #ping api for scores during live game
 #API call at halftime just to check scores (45 min after game start?) (via sportradar.py, check_score_by_game_id() )
  # should update sportradar.txt with new current game data
     #if scores are below threshold, do not call API for another 15 mins

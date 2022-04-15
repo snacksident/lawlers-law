@@ -2,11 +2,21 @@ import requests
 from dotenv import load_dotenv
 import os
 import json
-import random
 from datetime import datetime
 import time
 
 load_dotenv() # loads environmental vars
+
+def scheduler():
+    game_on = False
+    for games in games_to_track:
+        while not game_on:
+            if utc_clock != games["date"]["start"]:
+                print(f'now watching the {games["home"]["name"]} vs {games["visitors"]["name"]} game')
+                game_on = True #break out of loop
+        #fire off tweet saying you're watching the broadcast
+
+    pass
 
 def get_todays_games():
     '''
@@ -133,7 +143,13 @@ def reset_data():
     '''
     global games_to_track
     games_to_track = []
-assign_game_data()  #this is working
-update_scores() #this appears to be working - test during live games tonight
-# check_winner()
-check_live_scores()
+
+
+assign_game_data()  #this is working 
+utc_clock = datetime.utcnow()
+print(utc_clock.strftime("%H:%M:%S"))
+game_start = games_to_track[0]["start"][11:19]
+print(game_start)
+# update_scores() #this appears to be working - test during live games tonight
+# # check_winner()
+# check_live_scores()

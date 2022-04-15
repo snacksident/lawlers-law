@@ -10,6 +10,12 @@ client = tweepy.Client(consumer_key=os.getenv('CONSUMER_KEY'),
                        access_token_secret=os.getenv('ACCESS_TOKEN_SECRET'))
 # create tweet with token credentials
 text_to_tweet = ""
+lawler_phrases = ["oh me oh my", "bingo", "fasten your seatbelts"]
+def generate_tweet_text():
+    #grab the winner in a string
+    #piece together a phrase about the team winning based off listed phrases
+    #send_tweet('')
+    pass
 # response = client.create_tweet(text='testing testing 1,2,3 its me ralph lawler ')
 def send_tweet(tweet_text):
     '''
