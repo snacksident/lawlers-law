@@ -9,6 +9,9 @@ import time
 load_dotenv() # loads environmental vars
 
 def get_todays_games():
+    '''
+    gets a list of games happening on a specifi day, writes results into rapid_api_todaysgames.txt for further usage
+    '''
     todays_date = str(datetime.today())[:10]
 
     url = 'https://api-nba-v1.p.rapidapi.com/games'
@@ -23,6 +26,9 @@ def get_todays_games():
     todays_games.write(todays_json)
 
 def get_score_by_game_id(game_id):
+    '''
+    gets live data from rapid_api nba-api based on the game_id passed in.  updates nba_api.txt with results for further usage
+    '''
     API_KEY = os.getenv('RAPID_API_KEY')
     url = "https://api-nba-v1.p.rapidapi.com/games"
     querystring = {"id": game_id}
@@ -38,10 +44,54 @@ def get_score_by_game_id(game_id):
 with open("rapid_api_todaysgames.txt") as todays_games:
     todays_docket = todays_games.read()
 json_docket = json.loads(todays_docket)
+with open("nba_api.txt") as f:
+    current_game = f.read()
+json_current = json.loads(current_game)
+    
 
+games_to_track = []
+#only call this func if there are games on todays schedule
 def assign_game_data():
-    #check if any games on the menu today
+    '''
+    takes data from rapid_api_todaysgames.txt and shapes them into a dictionary for further usage during live games
+    '''
     #if no games, set 24h timer to check for games again?
     #if games today
+    for games in json_docket["response"]:
+        game = {
+            "id": games["id"],
+            "start": games["date"]["start"],
+            "home": {
+                "name": games["teams"]["home"]["name"],
+                "score": 0
+            },
+            "visitor": {
+                "name": games["teams"]["visitors"]["name"],
+                "score": 0
+            }
+        }
+        games_to_track.append(game)
         #log games info (id,start_time,home{name, score},away{home,score})
     pass
+def update_scores():
+    '''
+    updates scores via live API calls
+    '''
+    for games in games_to_track:
+        get_score_by_game_id(games["id"])
+        #if score from API > score in games
+        if games["home"]["score"] < json_current["response"][0]["scores"]["home"]["points"]:
+            games["home"]["score"] = json_current["response"][0]["scores"]["home"]["points"]
+        if games["visitor"]["score"] < json_current["response"][0]["scores"]["visitors"]["points"]:
+            games["visitor"]["score"] = json_current["response"][0]["scores"]["visitors"]["points"]
+        
+
+
+def reset_data():
+    '''
+    resets the games_to_track list so we can start with a fresh slate every day
+    '''
+    global games_to_track
+    games_to_track = []
+assign_game_data()  #this is working
+update_scores() #this appears to be working - test during live games tonight

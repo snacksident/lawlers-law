@@ -1,5 +1,5 @@
 #while True:
-#(automated, early AM) get days games (via sportradar.py check_todays_games())
+#(automated, early AM) get days games (via nba-api.py check_todays_games())
 #store games in dict/list var for reference later (teams playing, game id, scores, game time (local))
 #API call at halftime just to check scores (45 min after game start?) (via sportradar.py, check_score_by_game_id() )
  # should update sportradar.txt with new current game data
@@ -12,5 +12,3 @@
             #do next API call after ~that amount of time to get final score
                 #fire followup tweet if my "winning team" had lost
 
-
-#app will need overhaul for new API once sportradar trial expires :(
