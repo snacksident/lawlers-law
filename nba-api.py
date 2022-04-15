@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime
 import time
+from tweet import send_tweet
 
 load_dotenv() # loads environmental vars
 
@@ -12,15 +13,17 @@ def scheduler():
     for games in games_to_track:
         while not game_on:
             utc_clock = datetime.utcnow().strftime("%H:%M:%S")
-            # fake_game_start = "22:31:00"
-            # if utc_clock == fake_game_start:
-            #     print('its time to ball')
-            #     game_on = True
-            if utc_clock != games["date"]["start"][11:19]: #check utc time (HH:MM:SS) vs game start time in utc (HH:MM:SS)
-                print(f'now watching the {games["home"]["name"]} vs {games["visitors"]["name"]} game')
+            game_start = games["start"][11:19]
+            if utc_clock >= game_start: #check utc time (HH:MM:SS) vs game start time in utc (HH:MM:SS)
+                print(f'now watching the {games["home"]["name"]} vs {games["visitor"]["name"]} game')
+                tweet_content = f'now watching the {games["home"]["name"]} vs {games["visitor"]["name"]} game'
+                send_tweet(tweet_content)
+                watch_game() #start the game-watching loop
                 game_on = True #break out of loop
-        #fire off tweet saying you're watching the broadcast
 
+def watch_game():
+    time.sleep(60 * 60) #wait an hour before checking scores
+    check_live_scores() #start checking scores an hour into the game
     pass
 
 def get_todays_games():
@@ -70,8 +73,6 @@ def assign_game_data():
     '''
     takes data from rapid_api_todaysgames.txt and shapes them into a dictionary for further usage during live games
     '''
-    #if no games, set 24h timer to check for games again?
-    #if games today
     for games in json_docket["response"]:
         game = {
             "id": games["id"],
@@ -86,8 +87,7 @@ def assign_game_data():
             }
         }
         games_to_track.append(game)
-        #log games info (id,start_time,home{name, score},away{home,score})
-    pass
+    
 def update_scores():
     '''
     updates scores via live API calls
@@ -105,14 +105,17 @@ def update_scores():
 def check_winner():
     '''
     checks to see if a team has hit 100 points.  if conditions are met, winner is assigned to the first team to 100
+    returns a winning team if there is one, otherwise returns None
     '''
     for games in games_to_track:
         winner = None
         if winner == None:
             if games["home"]["score"] >= 100:
                 winner = games["home"]["name"]
-            if games["visitor"]["score"] >= 100:
+            elif games["visitor"]["score"] >= 100:
                 winner = games["visitor"]["name"]
+            else: 
+                winner = None
         #maybe just fire off the tweet when a winner has been determined?
         #log what part of the game we're currently in, set timer to ping game at 'end'?
         return winner
@@ -129,7 +132,6 @@ def check_live_scores():
                 #api call 3x per minute
                 time.sleep(20)
                 update_scores()
-                #update_scores() ?
             elif games["home"]["score"] > 80 or games["visitor"]["score"] > 80:
                 #api call every minute
                 time.sleep(60)
@@ -138,10 +140,11 @@ def check_live_scores():
                 #api call every 2 minutes
                 time.sleep(120)
                 update_scores()
+            else: #if score is below 70
+                time.sleep(60 * 10) #wait 10 mins
+                update_scores()
             
                 
-        
-
 def reset_data():
     '''
     resets the games_to_track list so we can start with a fresh slate every day
@@ -149,9 +152,9 @@ def reset_data():
     global games_to_track
     games_to_track = []
 
-# get_todays_games()
+get_todays_games() #todo: set to happen at midnight UTC
 assign_game_data()  #this is working 
 # update_scores() #this appears to be working - test during live games tonight
-# # check_winner()
+# check_winner()
 # check_live_scores()
 scheduler()
