@@ -18,19 +18,17 @@ def scheduler():
                 print(f'now watching the {games["home"]["name"]} vs {games["visitor"]["name"]} game')
                 tweet_content = f'now watching the {games["home"]["name"]} vs {games["visitor"]["name"]} game'
                 send_tweet(tweet_content)
-                watch_game() #start the game-watching loop
+                check_live_scores() #start the game-watching loop
                 game_on = True #break out of loop
+            if utc_clock > game_start:
+                check_live_scores()
 
-def watch_game():
-    time.sleep(60 * 60) #wait an hour before checking scores
-    check_live_scores() #start checking scores an hour into the game
-    pass
 
 def get_todays_games():
     '''
     gets a list of games happening on a specifi day, writes results into rapid_api_todaysgames.txt for further usage
     '''
-    todays_date = str(datetime.today())[:10]
+    todays_date = str(datetime.utcnow().date())
 
     url = 'https://api-nba-v1.p.rapidapi.com/games'
     querystring = {"date":todays_date}
@@ -59,12 +57,12 @@ def get_score_by_game_id(game_id):
     current_score_json = json.dumps(response.json())
     current_score_info.write(current_score_json)
 
-with open("rapid_api_todaysgames.txt") as todays_games:
-    todays_docket = todays_games.read()
-json_docket = json.loads(todays_docket)
-with open("nba_api.txt") as f:
-    current_game = f.read()
-json_current = json.loads(current_game)
+# with open("rapid_api_todaysgames.txt") as todays_games:
+#     todays_docket = todays_games.read()
+# json_docket = json.loads(todays_docket)
+# with open("nba_api.txt") as f:
+#     current_game = f.read()
+# json_current = json.loads(current_game)
     
 
 games_to_track = []
@@ -73,6 +71,9 @@ def assign_game_data():
     '''
     takes data from rapid_api_todaysgames.txt and shapes them into a dictionary for further usage during live games
     '''
+    with open("rapid_api_todaysgames.txt") as todays_games:
+        todays_docket = todays_games.read()
+    json_docket = json.loads(todays_docket)
     for games in json_docket["response"]:
         game = {
             "id": games["id"],
@@ -93,6 +94,9 @@ def update_scores():
     updates scores via live API calls
     calls get_score_by_game_id on current game, checks currently logged scores vs most recently received data from API
     '''
+    with open("nba_api.txt") as f:
+        current_game = f.read()
+    json_current = json.loads(current_game)
     for games in games_to_track:
         get_score_by_game_id(games["id"])
         #if the score saved locally is less than the score received on the recent API call, reassign the score.
@@ -112,8 +116,10 @@ def check_winner():
         if winner == None:
             if games["home"]["score"] >= 100:
                 winner = games["home"]["name"]
+                send_tweet(f'{winner} has just won the game!!!')
             elif games["visitor"]["score"] >= 100:
                 winner = games["visitor"]["name"]
+                send_tweet(f'{winner} has just won the game!!!')
             else: 
                 winner = None
         #maybe just fire off the tweet when a winner has been determined?
@@ -126,8 +132,8 @@ def check_winner():
 def check_live_scores():
     winner = None
     while winner == None:
-        winner = check_winner()
         for games in games_to_track:
+            print(f'about to check scores - home:{games["home"]["score"]}, vs visitor: {games["visitor"]["score"]}')
             if games["home"]["score"] > 90 or games["visitor"]["score"] > 90:
                 #api call 3x per minute
                 time.sleep(20)
@@ -140,10 +146,13 @@ def check_live_scores():
                 #api call every 2 minutes
                 time.sleep(120)
                 update_scores()
-            else: #if score is below 70
+            elif games["home"]["score"] > 50 or games["visitor"]["score"] > 50:
+                time.sleep(60 * 10)
+                update_scores()
+            else: #if score is below 50
                 time.sleep(60 * 10) #wait 10 mins
                 update_scores()
-            
+        winner = check_winner()
                 
 def reset_data():
     '''
@@ -154,7 +163,8 @@ def reset_data():
 
 get_todays_games() #todo: set to happen at midnight UTC
 assign_game_data()  #this is working 
-# update_scores() #this appears to be working - test during live games tonight
-# check_winner()
-# check_live_scores()
+# # update_scores() #this appears to be working - test during live games tonight
+# # check_winner()
+# # check_live_scores()
 scheduler()
+# check_live_scores()
