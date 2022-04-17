@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 import time
 from tweet import send_tweet
+from Game import Game
 
 load_dotenv() # loads environmental vars
 
@@ -26,7 +27,7 @@ def scheduler():
 
 def get_todays_games():
     '''
-    gets a list of games happening on a specifi day, writes results into rapid_api_todaysgames.txt for further usage
+    returns a list of all games happening on this day (IN UTC TIME ZONE) from NBA-API via rapidAPI
     '''
     todays_date = str(datetime.utcnow().date())
 
@@ -40,9 +41,30 @@ def get_todays_games():
     todays_games = open("rapid_api_todaysgames.txt","w")
     todays_json = json.dumps(todays_schedule.json())
     todays_games.write(todays_json)
-
+    todays_schedule = todays_schedule.json()
+    game_obj = []
     for games in todays_schedule["response"]:
-        print(f'todays games are {games}')
+        # print(f'todays games are {games}')
+        if games["status"]["long"] != "Finished":
+            # print(games["date"]["start"],games["id"],games["teams"]["home"]["name"],games["scores"]["home"]["points"],games["teams"]["visitors"]["name"],games["scores"]["visitors"]["points"])
+            game_today = Game(games["date"]["start"],games["id"],games["teams"]["home"]["name"],games["scores"]["home"]["points"],games["teams"]["visitors"]["name"],games["scores"]["visitors"]["points"])
+            game_obj.append(game_today)
+    return game_obj
+
+games = get_todays_games()
+for game in games:
+    print(game)
+    print(datetime.utcnow().isoformat())
+
+
+
+
+
+
+
+
+
+
 
 def get_score_by_game_id(game_id):
     '''
@@ -172,10 +194,5 @@ def reset_data():
     global games_to_track
     games_to_track = []
 
-get_todays_games() #todo: set to happen at midnight UTC
-# assign_game_data()  #this is working 
-# # update_scores() #this appears to be working - test during live games tonight
-# # check_winner()
-# # check_live_scores()
-# scheduler()
-# check_live_scores()
+
+    
