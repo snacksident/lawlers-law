@@ -41,6 +41,9 @@ def get_todays_games():
     todays_json = json.dumps(todays_schedule.json())
     todays_games.write(todays_json)
 
+    for games in todays_schedule["response"]:
+        print(f'todays games are {games}')
+
 def get_score_by_game_id(game_id):
     '''
     gets live data from rapid_api nba-api based on the game_id passed in.  updates nba_api.txt with results for further usage
@@ -97,6 +100,12 @@ def update_scores():
     with open("nba_api.txt") as f:
         current_game = f.read()
     json_current = json.loads(current_game)
+    with open("rapid_api_todaysgames.txt") as file:
+        games_list = f.read()
+    json_games = json.loads(games_list)
+    for games in json_games["response"]:
+
+        pass
     for games in games_to_track:
         get_score_by_game_id(games["id"])
         #if the score saved locally is less than the score received on the recent API call, reassign the score.
@@ -133,6 +142,7 @@ def check_live_scores():
     winner = None
     while winner == None:
         for games in games_to_track:
+            print(games_to_track)
             print(f'about to check scores - home:{games["home"]["score"]}, vs visitor: {games["visitor"]["score"]}')
             if games["home"]["score"] > 90 or games["visitor"]["score"] > 90:
                 #api call 3x per minute
@@ -150,6 +160,7 @@ def check_live_scores():
                 time.sleep(60 * 10)
                 update_scores()
             else: #if score is below 50
+                print('updating in 10 mins. low scores')
                 time.sleep(60 * 10) #wait 10 mins
                 update_scores()
         winner = check_winner()
@@ -162,9 +173,9 @@ def reset_data():
     games_to_track = []
 
 get_todays_games() #todo: set to happen at midnight UTC
-assign_game_data()  #this is working 
+# assign_game_data()  #this is working 
 # # update_scores() #this appears to be working - test during live games tonight
 # # check_winner()
 # # check_live_scores()
-scheduler()
+# scheduler()
 # check_live_scores()
